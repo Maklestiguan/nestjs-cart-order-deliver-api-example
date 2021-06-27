@@ -1,0 +1,657 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Создание заказа на доставку из магазинов сети",
+    "version": "1.0.0",
+    "title": "Orders API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "test@test.com"
+    }
+  },
+  "host": "store-example.com",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "store"
+    },
+    {
+      "name": "products"
+    },
+    {
+      "name": "reserve"
+    },
+    {
+      "name": "orders"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/stores": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Список магазинов",
+        "operationId": "getStores",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Stores"
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Информация о магазине",
+        "operationId": "getStoresById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "description": "ID of store to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/StoreById"
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}/stock": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Список остатков по выбранным позициям в конкретном магазине",
+        "operationId": "getProducts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "description": "ID of store to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "productId",
+            "in": "query",
+            "description": "ID of products to return stocks",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/StocksResponse"
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Информация  по продукту",
+        "operationId": "getProduct",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID of product to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}/quantity": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Информация по остаткам по продукту с фильтрацией по магазинам",
+        "operationId": "getProductQuantity",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID of product to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "storeId",
+            "in": "query",
+            "description": "ID of stores to return stocks",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ProductQuantityResponse"
+            }
+          }
+        }
+      }
+    },
+    "/reserves": {
+      "post": {
+        "tags": [
+          "reserve"
+        ],
+        "summary": "Резервирование товара в магазине",
+        "description": "",
+        "operationId": "addProducts",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Reserve"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ReserveResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/reserves/{reserveId}": {
+      "get": {
+        "tags": [
+          "reserve"
+        ],
+        "summary": "Информация по резерву",
+        "description": "",
+        "operationId": "getReserve",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "reserveId",
+            "in": "path",
+            "description": "ID of reserve to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ReserveReturn"
+            }
+          },
+          "404": {
+            "description": "Reserve not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "reserve"
+        ],
+        "summary": "Удалить резерв",
+        "description": "",
+        "operationId": "deleteReserve",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "reserveId",
+            "in": "path",
+            "description": "ID of reserve to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "Reserve not found"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Создание заказа",
+        "description": "Все переданные reserveId удаляются при успешном создании заказа",
+        "operationId": "createOrders",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrdersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/OrdersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Получить заказ",
+        "description": "",
+        "operationId": "getOrder",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Удалить заказ",
+        "description": "",
+        "operationId": "deleteOrder",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "APIKeyHeader": {
+      "type": "apiKey",
+      "name": "x-api-key",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "APIKeyHeader": []
+    }
+  ],
+  "definitions": {
+    "Reserve": {
+      "type": "object",
+      "properties": {
+        "storeId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "productId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "ReserveReturn": {
+      "type": "object",
+      "properties": {
+        "reserveId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "storeId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "productId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "ReserveResponse": {
+      "type": "object",
+      "properties": {
+        "reserveId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "Stores": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Store"
+      }
+    },
+    "Store": {
+      "type": "object",
+      "properties": {
+        "storeId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "example": "ЦО"
+        }
+      }
+    },
+    "StoreById": {
+      "type": "object",
+      "properties": {
+        "storeId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "example": "ЦО"
+        },
+        "description": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
+      }
+    },
+    "StocksResponse": {
+      "type": "object",
+      "properties": {
+        "storeId": {
+          "type": "integer"
+        },
+        "stocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "quantity": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ProductQuantityResponse": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "integer"
+        },
+        "totalQuantity": {
+          "type": "integer"
+        },
+        "stocksByStores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "storeId": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "quantity": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "example": "Отвёртка"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "imageURL": {
+          "type": "string",
+          "format": "url",
+          "example": "https://images.app.goo.gl/BLSVaYQCXeSa7cxF9"
+        }
+      }
+    },
+    "OrdersRequest": {
+      "type": "object",
+      "properties": {
+        "clientID": {
+          "type": "integer"
+        },
+        "deliveryDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "reserveList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reserveId": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "example": [
+            {
+              "reserveId": 110
+            },
+            {
+              "reserveId": 114
+            },
+            {
+              "reserveId": 128
+            }
+          ]
+        }
+      }
+    },
+    "OrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "orderNumber": {
+          "type": "string",
+          "example": "LMN-77812"
+        },
+        "orderPrice": {
+          "type": "number",
+          "format": "int64",
+          "example": 15735.46
+        },
+        "deliveryAddress": {
+          "type": "string",
+          "example": "Moscow, October str, 18"
+        },
+        "positions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": {
+                "type": "integer"
+              },
+              "quantity": {
+                "type": "integer"
+              },
+              "storeId": {
+                "type": "integer"
+              },
+              "deliveryDate": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
