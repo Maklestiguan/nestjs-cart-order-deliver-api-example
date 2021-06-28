@@ -20,8 +20,12 @@ export class CreateOrderDto {
     @IsDateString()
     deliveryDate: string
 
+    @IsString()
+    @IsNotEmpty()
+    deliveryAddress: string
+
     @ValidateNested({ each: true })
-    positionIds: CreateReservationResponseDto[]
+    positionIds: CreateReservationResponseDto[] // TODO: replace with more appropriate class?
 }
 
 export class OrderDto {

@@ -9,7 +9,7 @@ export class OrderEntity extends BaseEntity {
     @Column()
     clientId: number
 
-    @Column()
+    @Column({ unique: true })
     orderNumber: string
 
     @Column({
