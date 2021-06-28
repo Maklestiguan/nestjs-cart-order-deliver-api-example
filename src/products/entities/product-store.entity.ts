@@ -1,6 +1,7 @@
 import {
     Column,
     CreateDateColumn,
+    Entity,
     ManyToOne,
     UpdateDateColumn,
     VersionColumn,
@@ -8,13 +9,16 @@ import {
 import { StoreEntity } from '../../stores/entities/store.entity'
 import { ProductEntity } from './product.entity'
 
+@Entity('products__stores')
 export class ProductStoreEntity {
     @ManyToOne(() => ProductEntity, (product) => product.productStores, {
+        primary: true,
         eager: true,
     })
     product: ProductEntity
 
     @ManyToOne(() => StoreEntity, (store) => store.storeProducts, {
+        primary: true,
         eager: true,
     })
     store: StoreEntity

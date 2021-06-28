@@ -1,9 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { BigNumberFieldTransformer } from 'src/shared/transformers/bignumber-field.transformer'
-import { Column, OneToMany } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { BaseEntity } from '../../shared/entities/base.entity'
 import { ProductStoreEntity } from './product-store.entity'
 
+@Entity('products')
 export class ProductEntity extends BaseEntity {
     @Column()
     name: string

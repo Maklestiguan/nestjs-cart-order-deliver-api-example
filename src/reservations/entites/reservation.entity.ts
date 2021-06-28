@@ -1,9 +1,10 @@
-import { Column, JoinColumn, ManyToOne, OneToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm'
 import { OrderEntity } from '../../orders/entites/order.entity'
 import { ProductEntity } from '../../products/entities/product.entity'
 import { BaseEntity } from '../../shared/entities/base.entity'
 import { StoreEntity } from '../../stores/entities/store.entity'
 
+@Entity('reservations')
 export class ReservationEntity extends BaseEntity {
     @OneToOne(() => StoreEntity, { eager: true })
     @JoinColumn()

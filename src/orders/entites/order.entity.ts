@@ -1,10 +1,14 @@
 import BigNumber from 'bignumber.js'
-import { Column, JoinColumn, OneToMany } from 'typeorm'
+import { AfterInsert, Column, Entity, JoinColumn, OneToMany } from 'typeorm'
 import { ReservationEntity } from '../../reservations/entites/reservation.entity'
 import { BaseEntity } from '../../shared/entities/base.entity'
 import { BigNumberFieldTransformer } from '../../shared/transformers/bignumber-field.transformer'
 
+@Entity('orders')
 export class OrderEntity extends BaseEntity {
+    @Column()
+    clientId: number
+
     @Column()
     orderNumber: string
 
@@ -25,4 +29,14 @@ export class OrderEntity extends BaseEntity {
     })
     @JoinColumn()
     positions: ReservationEntity[]
+
+    @AfterInsert()
+    calculatePrice(): void {
+        this.price = this.positions.reduce(
+            (acc, { product: { price }, quantity }) => {
+                return acc.plus(price.multipliedBy(quantity))
+            },
+            new BigNumber(0),
+        )
+    }
 }
