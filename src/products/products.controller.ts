@@ -1,11 +1,4 @@
-import {
-    Controller,
-    Get,
-    Param,
-    ParseArrayPipe,
-    ParseIntPipe,
-    Query,
-} from '@nestjs/common'
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common'
 import { ProductDto, ProductQuantityDto } from './dtos/product.dto'
 import { ProductsService } from './products.service'
 
