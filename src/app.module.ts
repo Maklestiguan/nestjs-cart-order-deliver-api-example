@@ -11,6 +11,7 @@ import { StoresModule } from './stores/stores.module'
 import { ProductsModule } from './products/products.module'
 import { ReservationsModule } from './reservations/reservations.module'
 import { OrdersModule } from './orders/orders.module'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { OrdersModule } from './orders/orders.module'
         ProductsModule,
         ReservationsModule,
         OrdersModule,
+        ScheduleModule.forRoot(),
     ],
     providers: [
         {

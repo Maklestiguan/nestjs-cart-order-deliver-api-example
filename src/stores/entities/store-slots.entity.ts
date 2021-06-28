@@ -1,18 +1,22 @@
-import { AfterUpdate, Column, Entity } from 'typeorm'
+import { AfterUpdate, Column, Entity, ManyToOne } from 'typeorm'
 import { BaseEntity } from '../../shared/entities/base.entity'
+import { StoreEntity } from './store.entity'
 
 @Entity('store_slots')
 export class StoreSlotsEntity extends BaseEntity {
-    @Column()
+    @ManyToOne(() => StoreEntity)
+    store: StoreEntity
+
+    @Column({ type: 'date' })
     deliveryDate: Date
 
-    // TODO: add database locks on possible concurrent requests
+    // TODO: add database locks on possible concurrent requests ?
     @Column()
-    slots: number
+    available: number
 
     @AfterUpdate()
     hideFromAvailable(): void {
-        if (this.slots === 0) {
+        if (this.available === 0) {
             this._deletedAt = new Date()
         }
     }

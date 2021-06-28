@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { FilterDto } from '../shared/dtos/filter.dto'
 import { applyFilterToSelector } from '../shared/helpers/apply-filter-to-selector.helper'
@@ -8,14 +8,24 @@ import { StoreEntity } from './entities/store.entity'
 import { GetStocksDto, StoreStocksDto } from './dtos/stocks.dto'
 import { ProductStoreEntity } from '../products/entities/product-store.entity'
 import { StocksByStoresDto } from '../products/dtos/stocks-by-store.dto'
+import { Cron, CronExpression } from '@nestjs/schedule'
+import { StoreSlotsEntity } from './entities/store-slots.entity'
+import {
+    DAYS_IN_WEEK,
+    SMALL_CHUNK_SIZE,
+} from '../shared/constants/common.constants'
 
 @Injectable()
 export class StoresService {
+    private readonly _logger = new Logger(StoresService.name)
+
     constructor(
         @InjectRepository(StoreEntity)
         private readonly _storesRepository: Repository<StoreEntity>,
         @InjectRepository(ProductStoreEntity)
         private readonly _productStoreRepository: Repository<ProductStoreEntity>,
+        @InjectRepository(StoreSlotsEntity)
+        private readonly _storeSlotsRepository: Repository<StoreSlotsEntity>,
     ) {}
 
     async stores(filter: FilterDto): Promise<StoreEntity[]> {
@@ -69,5 +79,50 @@ export class StoresService {
         const document = await this._storesRepository.save(newStore)
 
         return document
+    }
+
+    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+    async removeStaleStoreSlots(): Promise<void> {
+        const today = new Date()
+        const yesterday = new Date(today.getDate() - 1)
+
+        const { affected } = await this._storeSlotsRepository.softDelete({
+            deliveryDate: yesterday,
+        })
+
+        this._logger.debug(
+            `Removed total of ${affected} store slots with delivery date ${yesterday}`,
+        )
+    }
+
+    @Cron(CronExpression.EVERY_WEEK)
+    async generateNextWeekStoreSlots(): Promise<void> {
+        const today = new Date()
+        const stores = await this._storesRepository.find()
+        const storeSlotsToSave: StoreSlotsEntity[] = []
+
+        for (let i = 0; i < DAYS_IN_WEEK; i++) {
+            const newStoreSlots = stores.map((store) => {
+                const { id } = store
+                return this._storeSlotsRepository.create({
+                    store: { id },
+                    available: 60,
+                    deliveryDate: new Date(today.getDate() + i),
+                })
+            })
+
+            storeSlotsToSave.push(...newStoreSlots)
+        }
+
+        const documents = await this._storeSlotsRepository.save(
+            storeSlotsToSave,
+            {
+                chunk: SMALL_CHUNK_SIZE,
+            },
+        )
+
+        this._logger.debug(
+            `Generated total of ${documents.length} store slots for the week starting at ${today}`,
+        )
     }
 }
