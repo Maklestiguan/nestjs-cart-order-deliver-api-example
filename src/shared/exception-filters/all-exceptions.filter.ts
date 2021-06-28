@@ -20,7 +20,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         this._logger.error({
             exception,
             host: request.hostname,
-            headers: request.rawHeaders,
+            headers: request.headers,
         })
 
         const status =
