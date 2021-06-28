@@ -4,8 +4,8 @@ import {
     Logger,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { FilterDto } from 'src/shared/dtos/filter.dto'
-import { applyFilterToSelector } from 'src/shared/helpers/apply-filter-to-selector.helper'
+import { FilterDto } from '../shared/dtos/filter.dto'
+import { applyFilterToSelector } from '../shared/helpers/apply-filter-to-selector.helper'
 import { FindManyOptions, Repository } from 'typeorm'
 import { CreateStoreDto } from './dtos/store.dto'
 import { StoreEntity } from './entities/store.entity'

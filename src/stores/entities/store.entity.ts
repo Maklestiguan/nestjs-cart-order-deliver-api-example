@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/shared/entities/base.entity'
+import { BaseEntity } from '../../shared/entities/base.entity'
 import { Column } from 'typeorm'
 
 export class StoreEntity extends BaseEntity {

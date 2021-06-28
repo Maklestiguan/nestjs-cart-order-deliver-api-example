@@ -8,7 +8,7 @@ import {
     Query,
     UseInterceptors,
 } from '@nestjs/common'
-import { FilterDto } from 'src/shared/dtos/filter.dto'
+import { FilterDto } from '../shared/dtos/filter.dto'
 import { ConciseStoreDto, CreateStoreDto, StoreDto } from './dtos/store.dto'
 import { StoresService } from './stores.service'
 
