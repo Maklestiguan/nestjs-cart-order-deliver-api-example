@@ -9,6 +9,7 @@ import { typeormConfig } from './config/typeorm.config'
 import { AllExceptionsFilter } from './shared/exception-filters/all-exceptions.filter'
 import { StoresModule } from './stores/stores.module'
 import { ProductsModule } from './products/products.module'
+import { ReservationsModule } from './reservations/reservations.module'
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { ProductsModule } from './products/products.module'
         ThrottlerModule.forRootAsync(throttlerConfig),
         StoresModule,
         ProductsModule,
+        ReservationsModule,
     ],
     providers: [
         {
