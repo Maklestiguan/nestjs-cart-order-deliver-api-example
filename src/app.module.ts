@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from './shared/exception-filters/all-exceptions.f
 import { StoresModule } from './stores/stores.module'
 import { ProductsModule } from './products/products.module'
 import { ReservationsModule } from './reservations/reservations.module'
+import { OrdersModule } from './orders/orders.module'
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { ReservationsModule } from './reservations/reservations.module'
         StoresModule,
         ProductsModule,
         ReservationsModule,
+        OrdersModule,
     ],
     providers: [
         {
