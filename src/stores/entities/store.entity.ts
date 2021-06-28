@@ -1,5 +1,6 @@
 import { BaseEntity } from '../../shared/entities/base.entity'
-import { Column } from 'typeorm'
+import { Column, OneToMany } from 'typeorm'
+import { ProductStoreEntity } from '../../products/entities/product-store.entity'
 
 export class StoreEntity extends BaseEntity {
     @Column()
@@ -10,4 +11,7 @@ export class StoreEntity extends BaseEntity {
 
     @Column({ default: 'Unknown address' })
     address: string
+
+    @OneToMany(() => ProductStoreEntity, (productStore) => productStore.store)
+    storeProducts: ProductStoreEntity[]
 }

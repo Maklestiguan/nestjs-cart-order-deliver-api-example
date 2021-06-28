@@ -3,7 +3,7 @@ import { IsNotEmpty, IsPositive } from 'class-validator'
 
 export class StoreDto {
     @IsPositive()
-    readonly id: number
+    readonly storeId: number
 
     @IsNotEmpty()
     readonly name: string
@@ -16,7 +16,7 @@ export class StoreDto {
 }
 
 export class ConciseStoreDto extends PickType(StoreDto, [
-    'id',
+    'storeId',
     'name',
 ] as const) {}
-export class CreateStoreDto extends OmitType(StoreDto, ['id'] as const) {}
+export class CreateStoreDto extends OmitType(StoreDto, ['storeId'] as const) {}
