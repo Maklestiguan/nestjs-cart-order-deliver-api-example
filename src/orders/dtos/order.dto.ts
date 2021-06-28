@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/graphql'
+import { PickType } from '@nestjs/swagger'
 import BigNumber from 'bignumber.js'
 import {
     IsDateString,
@@ -21,7 +21,7 @@ export class CreateOrderDto {
     deliveryDate: string
 
     @ValidateNested({ each: true })
-    reservations: CreateReservationResponseDto[]
+    positionIds: CreateReservationResponseDto[]
 }
 
 export class OrderDto {

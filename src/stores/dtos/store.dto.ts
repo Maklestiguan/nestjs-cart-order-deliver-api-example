@@ -1,4 +1,4 @@
-import { OmitType, PickType } from '@nestjs/graphql'
+import { OmitType, PickType } from '@nestjs/swagger'
 import { IsNotEmpty, IsPositive } from 'class-validator'
 
 export class StoreDto {
