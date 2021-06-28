@@ -8,14 +8,13 @@ import {
     ParseIntPipe,
     Post,
 } from '@nestjs/common'
+import { DEFAULT_DELETE_HTTP_CODE } from '../shared/constants/common.constants'
 import {
     CreateReservationDto,
     CreateReservationResponseDto,
     ReservationDto,
 } from './dtos/reservation.dto'
 import { ReservationsService } from './reservations.service'
-
-const DEFAULT_DELETE_HTTP_CODE = 204
 
 @Controller('reservations')
 export class ReservationsController {
