@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { FilterDto } from '../shared/dtos/filter.dto'
 import { applyFilterToSelector } from '../shared/helpers/apply-filter-to-selector.helper'
@@ -16,7 +16,7 @@ import {
 } from '../shared/constants/common.constants'
 
 @Injectable()
-export class StoresService {
+export class StoresService implements OnModuleInit {
     private readonly _logger = new Logger(StoresService.name)
 
     constructor(
@@ -27,6 +27,10 @@ export class StoresService {
         @InjectRepository(StoreSlotsEntity)
         private readonly _storeSlotsRepository: Repository<StoreSlotsEntity>,
     ) {}
+
+    async onModuleInit(): Promise<void> {
+        await this._generateNextWeekStoreSlots()
+    }
 
     async stores(filter: FilterDto): Promise<StoreEntity[]> {
         const selector: FindManyOptions<StoreEntity> = applyFilterToSelector(
@@ -82,7 +86,7 @@ export class StoresService {
     }
 
     @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-    async removeStaleStoreSlots(): Promise<void> {
+    private async _removeStaleStoreSlots(): Promise<void> {
         const today = new Date()
         const yesterday = new Date(today.getDate() - 1)
 
@@ -96,7 +100,7 @@ export class StoresService {
     }
 
     @Cron(CronExpression.EVERY_WEEK)
-    async generateNextWeekStoreSlots(): Promise<void> {
+    private async _generateNextWeekStoreSlots(): Promise<void> {
         const today = new Date()
         const stores = await this._storesRepository.find()
         const storeSlotsToSave: StoreSlotsEntity[] = []
