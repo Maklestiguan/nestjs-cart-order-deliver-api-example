@@ -59,8 +59,7 @@ export class StoresService implements OnModuleInit {
         const documents = await this._productStoreRepository.find({
             where: {
                 store: { id: storeId },
-                product: { productId: In(productIds) },
-                order: { _updatedAt: 'DESC' },
+                product: { id: In(productIds) },
             },
         })
 
@@ -141,7 +140,8 @@ export class StoresService implements OnModuleInit {
             )
         } catch (error) {
             this._logger.error({
-                error,
+                // XXX: error is quite verbose, uncomment if more context required
+                // error,
                 message: error?.message ?? 'Unexpected error',
             })
         }

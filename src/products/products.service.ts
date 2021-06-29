@@ -5,7 +5,6 @@ import { StoresService } from '../stores/stores.service'
 import { GetProductQuantityDto, ProductQuantityDto } from './dtos/product.dto'
 import { ProductStoreEntity } from './entities/product-store.entity'
 import { ProductEntity } from './entities/product.entity'
-import _ from 'lodash'
 
 @Injectable()
 export class ProductsService {
@@ -36,9 +35,8 @@ export class ProductsService {
 
         const documents = await this._productStoreRepository.find({
             where: {
-                product: { productId },
-                store: { storeId: In(storeIds) },
-                order: { _updatedAt: 'DESC' },
+                product: { id: productId },
+                store: { id: In(storeIds) },
             },
         })
 
@@ -48,7 +46,10 @@ export class ProductsService {
 
         const mapped: ProductQuantityDto = {
             productId,
-            totalQuantity: _.sumBy(documents, (document) => document.quantity),
+            totalQuantity: documents.reduce(
+                (acc, { quantity }) => acc + quantity,
+                0,
+            ),
             stocksByStores: documents.map((document) => {
                 const {
                     store: { id: storeId },
