@@ -12,8 +12,11 @@ import { Cron, CronExpression } from '@nestjs/schedule'
 import { StoreSlotsEntity } from './entities/store-slots.entity'
 import {
     DAYS_IN_WEEK,
+    ONE_DAY,
     SMALL_CHUNK_SIZE,
 } from '../shared/constants/common.constants'
+import { OnEvent } from '@nestjs/event-emitter'
+import { OrderEntity } from '../orders/entites/order.entity'
 
 @Injectable()
 export class StoresService implements OnModuleInit {
@@ -87,46 +90,91 @@ export class StoresService implements OnModuleInit {
 
     @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
     private async _removeStaleStoreSlots(): Promise<void> {
-        const today = new Date()
-        const yesterday = new Date(today.getDate() - 1)
+        try {
+            const yesterday = new Date(Date.now() - ONE_DAY)
 
-        const { affected } = await this._storeSlotsRepository.softDelete({
-            deliveryDate: yesterday,
-        })
+            const { affected } = await this._storeSlotsRepository.softDelete({
+                deliveryDate: yesterday,
+            })
 
-        this._logger.debug(
-            `Removed total of ${affected} store slots with delivery date ${yesterday}`,
-        )
+            this._logger.debug(
+                `Removed total of ${affected} store slots with delivery date ${yesterday}`,
+            )
+        } catch (error) {
+            this._logger.error({
+                error,
+                message: error?.message ?? 'Unexpected error',
+            })
+        }
     }
 
     @Cron(CronExpression.EVERY_WEEK)
     private async _generateNextWeekStoreSlots(): Promise<void> {
-        const today = new Date()
-        const stores = await this._storesRepository.find()
-        const storeSlotsToSave: StoreSlotsEntity[] = []
+        try {
+            const today = new Date()
+            const stores = await this._storesRepository.find()
+            const storeSlotsToSave: StoreSlotsEntity[] = []
 
-        for (let i = 0; i < DAYS_IN_WEEK; i++) {
-            const newStoreSlots = stores.map((store) => {
-                const { id } = store
-                return this._storeSlotsRepository.create({
-                    store: { id },
-                    available: 60,
-                    deliveryDate: new Date(today.getDate() + i),
+            for (let i = 0; i < DAYS_IN_WEEK; i++) {
+                const newStoreSlots = stores.map((store) => {
+                    const { id } = store
+
+                    return this._storeSlotsRepository.create({
+                        store: { id },
+                        available: 60,
+                        deliveryDate: new Date(Date.now() + ONE_DAY * i),
+                    })
                 })
+
+                storeSlotsToSave.push(...newStoreSlots)
+            }
+
+            const documents = await this._storeSlotsRepository.save(
+                storeSlotsToSave,
+                {
+                    chunk: SMALL_CHUNK_SIZE,
+                },
+            )
+
+            this._logger.debug(
+                `Generated total of ${documents.length} store slots for the week starting at ${today}`,
+            )
+        } catch (error) {
+            this._logger.error({
+                error,
+                message: error?.message ?? 'Unexpected error',
+            })
+        }
+    }
+
+    @OnEvent('order.created', { async: true })
+    private async _handleOrderCreatedEvent(
+        payload: OrderEntity,
+    ): Promise<void> {
+        try {
+            const { positions, deliveryDate } = payload
+            const storeIds = positions.map((position) => position.store.id)
+
+            const storeSlots = await this._storeSlotsRepository.find({
+                where: {
+                    store: { id: In(storeIds) },
+                    deliveryDate,
+                },
             })
 
-            storeSlotsToSave.push(...newStoreSlots)
+            const updatedStoreSlots = storeSlots.map((slot) => {
+                return {
+                    ...slot,
+                    available: slot.available--,
+                }
+            })
+
+            await this._storeSlotsRepository.save(updatedStoreSlots)
+        } catch (error) {
+            this._logger.error({
+                error,
+                message: error?.message ?? 'Unexpected error',
+            })
         }
-
-        const documents = await this._storeSlotsRepository.save(
-            storeSlotsToSave,
-            {
-                chunk: SMALL_CHUNK_SIZE,
-            },
-        )
-
-        this._logger.debug(
-            `Generated total of ${documents.length} store slots for the week starting at ${today}`,
-        )
     }
 }

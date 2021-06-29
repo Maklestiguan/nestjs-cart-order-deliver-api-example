@@ -18,7 +18,9 @@ export class ReservationEntity extends BaseEntity {
     quantity: number
 
     @ManyToOne(() => OrderEntity, {
+        // XXX: afaik relations are nullable by default, but let's not think too much about it rn...
         nullable: true,
+        cascade: ['update', 'soft-remove', 'recover'],
     })
     order?: OrderEntity
 }

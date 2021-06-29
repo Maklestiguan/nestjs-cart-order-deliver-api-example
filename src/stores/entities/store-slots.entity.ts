@@ -3,7 +3,7 @@ import { BaseEntity } from '../../shared/entities/base.entity'
 import { StoreEntity } from './store.entity'
 
 @Entity('store_slots')
-@Index(['id', 'store', 'deliveryDate'], { unique: true })
+@Index(['store', 'deliveryDate'], { unique: true })
 export class StoreSlotsEntity extends BaseEntity {
     @ManyToOne(() => StoreEntity)
     store: StoreEntity

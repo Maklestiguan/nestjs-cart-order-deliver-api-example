@@ -12,17 +12,20 @@ import { ProductsModule } from './products/products.module'
 import { ReservationsModule } from './reservations/reservations.module'
 import { OrdersModule } from './orders/orders.module'
 import { ScheduleModule } from '@nestjs/schedule'
+import { EventEmitterModule } from '@nestjs/event-emitter'
+import { eventEmitterConfig } from './config/event-emitter.config'
 
 @Module({
     imports: [
         ConfigModule.forRoot(config),
         TypeOrmModule.forRootAsync(typeormConfig),
         ThrottlerModule.forRootAsync(throttlerConfig),
+        EventEmitterModule.forRoot(eventEmitterConfig),
+        ScheduleModule.forRoot(),
         StoresModule,
         ProductsModule,
         ReservationsModule,
         OrdersModule,
-        ScheduleModule.forRoot(),
     ],
     providers: [
         {

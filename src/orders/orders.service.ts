@@ -4,6 +4,7 @@ import {
     NotFoundException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { EventEmitter2 } from 'eventemitter2'
 import { Repository } from 'typeorm'
 import { ReservationsService } from '../reservations/reservations.service'
 import {
@@ -20,6 +21,7 @@ export class OrdersService {
         @InjectRepository(OrderEntity)
         private readonly _ordersRepository: Repository<OrderEntity>,
         private readonly _reservationsService: ReservationsService,
+        private readonly _eventEmitter: EventEmitter2,
     ) {}
 
     async getById(id: number): Promise<OrderEntity> {
@@ -65,11 +67,11 @@ export class OrdersService {
             orderNumber: `${randomString(
                 ORDER_NUMBER_PREFIX_LENGTH,
             )}-${randomString(ORDER_NUMBER_POSTFIX_LENGTH, true)}`,
-            positions: positionIds.map(({ reservationId }) => {
-                return { id: reservationId }
-            }),
+            positions: reservations,
         })
         const document = await this._ordersRepository.save(newOrder)
+
+        this._eventEmitter.emit('order.created', document)
 
         return document
     }

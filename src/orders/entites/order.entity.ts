@@ -26,6 +26,7 @@ export class OrderEntity extends BaseEntity {
 
     @OneToMany(() => ReservationEntity, (reservation) => reservation.order, {
         eager: true,
+        cascade: true,
     })
     @JoinColumn()
     positions: ReservationEntity[]
