@@ -1,0 +1,159 @@
+-- Adminer 4.8.1 PostgreSQL 13.3 (Debian 13.3-1.pgdg100+1) dump
+
+\connect "cart-order-delivery-2";
+
+DROP TABLE IF EXISTS "orders";
+DROP SEQUENCE IF EXISTS orders_id_seq;
+CREATE SEQUENCE orders_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."orders" (
+    "id" integer DEFAULT nextval('orders_id_seq') NOT NULL,
+    "created_at" timestamptz DEFAULT now() NOT NULL,
+    "updated_at" timestamptz DEFAULT now() NOT NULL,
+    "deleted_at" timestamptz,
+    "version" integer DEFAULT '1' NOT NULL,
+    "clientId" integer NOT NULL,
+    "orderNumber" character varying NOT NULL,
+    "price" numeric NOT NULL,
+    "deliveryAddress" character varying NOT NULL,
+    "deliveryDate" character varying NOT NULL,
+    CONSTRAINT "PK_710e2d4957aa5878dfe94e4ac2f" PRIMARY KEY ("id"),
+    CONSTRAINT "UQ_59b0c3b34ea0fa5562342f24143" UNIQUE ("orderNumber")
+) WITH (oids = false);
+
+INSERT INTO "orders" ("id", "created_at", "updated_at", "deleted_at", "version", "clientId", "orderNumber", "price", "deliveryAddress", "deliveryDate") VALUES
+(3,	'2021-06-29 06:22:36.57078+00',	'2021-06-29 06:22:36.57078+00',	NULL,	1,	1,	'3x4-67962',	0,	'mock',	'2021-06-29T00:00:00.000Z');
+
+DROP TABLE IF EXISTS "products";
+DROP SEQUENCE IF EXISTS products_id_seq;
+CREATE SEQUENCE products_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."products" (
+    "id" integer DEFAULT nextval('products_id_seq') NOT NULL,
+    "created_at" timestamptz DEFAULT now() NOT NULL,
+    "updated_at" timestamptz DEFAULT now() NOT NULL,
+    "deleted_at" timestamptz,
+    "version" integer DEFAULT '1' NOT NULL,
+    "name" character varying NOT NULL,
+    "price" numeric NOT NULL,
+    "imageUrl" character varying,
+    CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+INSERT INTO "products" ("id", "created_at", "updated_at", "deleted_at", "version", "name", "price", "imageUrl") VALUES
+(1,	'2021-06-29 01:53:15.589999+00',	'2021-06-29 01:53:15.589999+00',	NULL,	1,	'testProduct_1',	100,	NULL),
+(2,	'2021-06-29 01:53:30.147449+00',	'2021-06-29 01:53:30.147449+00',	NULL,	1,	'testProduct_2',	200,	NULL),
+(3,	'2021-06-29 01:53:47.17133+00',	'2021-06-29 01:53:47.17133+00',	NULL,	1,	'testProduct_3',	300,	NULL),
+(4,	'2021-06-29 01:53:59.744929+00',	'2021-06-29 01:53:59.744929+00',	NULL,	1,	'testProduct_4',	400,	NULL);
+
+DROP TABLE IF EXISTS "products__stores";
+CREATE TABLE "public"."products__stores" (
+    "quantity" integer NOT NULL,
+    "productId" integer NOT NULL,
+    "storeId" integer NOT NULL,
+    "created_at" timestamptz DEFAULT now() NOT NULL,
+    "updated_at" timestamptz DEFAULT now() NOT NULL,
+    "version" integer DEFAULT '1' NOT NULL,
+    CONSTRAINT "PK_3ffa5ea7dc31c121790c1548497" PRIMARY KEY ("productId", "storeId")
+) WITH (oids = false);
+
+INSERT INTO "products__stores" ("quantity", "productId", "storeId", "created_at", "updated_at", "version") VALUES
+(5,	1,	1,	'2021-06-29 01:55:07.570724+00',	'2021-06-29 01:55:07.570724+00',	1),
+(2,	2,	2,	'2021-06-29 01:55:13.008215+00',	'2021-06-29 01:55:13.008215+00',	1),
+(5,	3,	3,	'2021-06-29 01:55:18.067158+00',	'2021-06-29 01:55:18.067158+00',	1),
+(1,	4,	3,	'2021-06-29 01:55:31.15353+00',	'2021-06-29 01:55:31.15353+00',	1),
+(3,	3,	2,	'2021-06-29 01:55:40.232411+00',	'2021-06-29 01:55:40.232411+00',	1);
+
+DROP TABLE IF EXISTS "reservations";
+DROP SEQUENCE IF EXISTS reservations_id_seq;
+CREATE SEQUENCE reservations_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."reservations" (
+    "id" integer DEFAULT nextval('reservations_id_seq') NOT NULL,
+    "created_at" timestamptz DEFAULT now() NOT NULL,
+    "updated_at" timestamptz DEFAULT now() NOT NULL,
+    "deleted_at" timestamptz,
+    "version" integer DEFAULT '1' NOT NULL,
+    "quantity" integer NOT NULL,
+    "storeId" integer,
+    "productId" integer,
+    "orderId" integer,
+    CONSTRAINT "PK_da95cef71b617ac35dc5bcda243" PRIMARY KEY ("id"),
+    CONSTRAINT "REL_ab5ed7082f9dc4bd1ecc8e5899" UNIQUE ("productId"),
+    CONSTRAINT "REL_d9b06ac057c3631d8e08300adc" UNIQUE ("storeId")
+) WITH (oids = false);
+
+INSERT INTO "reservations" ("id", "created_at", "updated_at", "deleted_at", "version", "quantity", "storeId", "productId", "orderId") VALUES
+(1,	'2021-06-29 05:24:13.582043+00',	'2021-06-29 06:22:36.57078+00',	NULL,	2,	3,	3,	3,	NULL);
+
+DROP TABLE IF EXISTS "store_slots";
+DROP SEQUENCE IF EXISTS store_slots_id_seq;
+CREATE SEQUENCE store_slots_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."store_slots" (
+    "id" integer DEFAULT nextval('store_slots_id_seq') NOT NULL,
+    "created_at" timestamptz DEFAULT now() NOT NULL,
+    "updated_at" timestamptz DEFAULT now() NOT NULL,
+    "deleted_at" timestamptz,
+    "version" integer DEFAULT '1' NOT NULL,
+    "available" integer NOT NULL,
+    "storeId" integer,
+    "deliveryDate" date NOT NULL,
+    CONSTRAINT "IDX_ce6f676902b0b53eca62c781bf" UNIQUE ("storeId", "deliveryDate"),
+    CONSTRAINT "PK_e4f8bf8a106b03f73e8c96bd678" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+INSERT INTO "store_slots" ("id", "created_at", "updated_at", "deleted_at", "version", "available", "storeId", "deliveryDate") VALUES
+(89,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-06-29'),
+(90,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-06-29'),
+(91,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-06-29'),
+(92,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-06-30'),
+(93,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-06-30'),
+(94,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-06-30'),
+(95,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-07-01'),
+(96,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-07-01'),
+(97,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-07-01'),
+(98,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-07-02'),
+(99,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-07-02'),
+(100,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-07-02'),
+(101,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-07-03'),
+(102,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-07-03'),
+(103,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-07-03'),
+(104,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-07-04'),
+(105,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-07-04'),
+(106,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-07-04'),
+(107,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	1,	'2021-07-05'),
+(108,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	2,	'2021-07-05'),
+(109,	'2021-06-29 02:16:57.684573+00',	'2021-06-29 02:16:57.684573+00',	NULL,	1,	60,	3,	'2021-07-05');
+
+DROP TABLE IF EXISTS "stores";
+DROP SEQUENCE IF EXISTS stores_id_seq;
+CREATE SEQUENCE stores_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."stores" (
+    "id" integer DEFAULT nextval('stores_id_seq') NOT NULL,
+    "created_at" timestamptz DEFAULT now() NOT NULL,
+    "updated_at" timestamptz DEFAULT now() NOT NULL,
+    "deleted_at" timestamptz,
+    "version" integer DEFAULT '1' NOT NULL,
+    "name" character varying NOT NULL,
+    "description" character varying DEFAULT 'Common description for ordinary store' NOT NULL,
+    "address" character varying DEFAULT 'Unknown address' NOT NULL,
+    CONSTRAINT "PK_7aa6e7d71fa7acdd7ca43d7c9cb" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+INSERT INTO "stores" ("id", "created_at", "updated_at", "deleted_at", "version", "name", "description", "address") VALUES
+(1,	'2021-06-29 01:54:18.59409+00',	'2021-06-29 01:54:18.59409+00',	NULL,	1,	'testStore_1',	'Common description for ordinary store',	'Unknown address'),
+(2,	'2021-06-29 01:54:26.718215+00',	'2021-06-29 01:54:26.718215+00',	NULL,	1,	'testStore_2',	'Common description for ordinary store',	'Unknown address'),
+(3,	'2021-06-29 01:54:34.419447+00',	'2021-06-29 01:54:34.419447+00',	NULL,	1,	'testStore_3',	'Common description for ordinary store',	'Unknown address');
+
+ALTER TABLE ONLY "public"."products__stores" ADD CONSTRAINT "FK_8f1aed8d060ceaf0220a1dbf029" FOREIGN KEY ("productId") REFERENCES products(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."products__stores" ADD CONSTRAINT "FK_91181fc38b03f4ad550d718ec85" FOREIGN KEY ("storeId") REFERENCES stores(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."reservations" ADD CONSTRAINT "FK_30ac98dc5f411b6847fb549a874" FOREIGN KEY ("orderId") REFERENCES orders(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."reservations" ADD CONSTRAINT "FK_ab5ed7082f9dc4bd1ecc8e58993" FOREIGN KEY ("productId") REFERENCES products(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."reservations" ADD CONSTRAINT "FK_d9b06ac057c3631d8e08300adc4" FOREIGN KEY ("storeId") REFERENCES stores(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."store_slots" ADD CONSTRAINT "FK_c025685d3adb87374cea48f933b" FOREIGN KEY ("storeId") REFERENCES stores(id) NOT DEFERRABLE;
+
+-- 2021-06-29 06:28:51.396275+00
