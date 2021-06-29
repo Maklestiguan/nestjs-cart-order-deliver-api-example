@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { ReservationsService } from '../reservations/reservations.service'
 import {
     ORDER_NUMBER_POSTFIX_LENGTH,
     ORDER_NUMBER_PREFIX_LENGTH,
@@ -14,6 +19,7 @@ export class OrdersService {
     constructor(
         @InjectRepository(OrderEntity)
         private readonly _ordersRepository: Repository<OrderEntity>,
+        private readonly _reservationsService: ReservationsService,
     ) {}
 
     async getById(id: number): Promise<OrderEntity> {
@@ -27,7 +33,32 @@ export class OrdersService {
     }
 
     async create(createOrderDto: CreateOrderDto): Promise<OrderEntity> {
-        const { positionIds, ...rest } = createOrderDto
+        const { positionIds, deliveryDate, ...rest } = createOrderDto
+
+        const reservations = await this._reservationsService.getAll({
+            ids: positionIds.map(({ reservationId }) => reservationId),
+        })
+
+        if (reservations.length < positionIds.length) {
+            throw new BadRequestException('Incorrect reservation ids provided') // TODO: Do we need to silently ignore non found reservations ?
+        }
+
+        // TODO: go for a negative check via `some` ?
+        const everyStoreHasAvailableSlotForDate = reservations.every(
+            (reservation) => {
+                const {
+                    store: { slots },
+                } = reservation
+
+                return slots?.find((slot) => slot.deliveryDate === deliveryDate)
+            },
+        )
+
+        if (!everyStoreHasAvailableSlotForDate) {
+            throw new BadRequestException(
+                'Some stores have no available slots for given date',
+            )
+        }
 
         const newOrder = this._ordersRepository.create({
             ...rest,
