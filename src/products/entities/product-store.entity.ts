@@ -26,12 +26,12 @@ export class ProductStoreEntity {
     @Column()
     quantity: number
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })
     _createdAt: Date
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp with time zone', name: 'updated_at' })
     _updatedAt: Date
 
-    @VersionColumn({ default: 1 })
+    @VersionColumn({ default: 1, name: 'version' })
     _version: number
 }

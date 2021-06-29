@@ -1,5 +1,5 @@
 import { BaseEntity } from '../../shared/entities/base.entity'
-import { Column, Entity, JoinColumn, OneToMany } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { ProductStoreEntity } from '../../products/entities/product-store.entity'
 import { StoreSlotsEntity } from './store-slots.entity'
 

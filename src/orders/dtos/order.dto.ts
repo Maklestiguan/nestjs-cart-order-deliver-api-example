@@ -1,5 +1,6 @@
 import { PickType } from '@nestjs/swagger'
 import BigNumber from 'bignumber.js'
+import { Transform } from 'class-transformer'
 import {
     IsDateString,
     IsNotEmpty,
@@ -18,7 +19,8 @@ export class CreateOrderDto {
     clientId: number
 
     @IsDateString()
-    deliveryDate: string
+    @Transform(({ value }) => new Date(value))
+    deliveryDate: Date
 
     @IsString()
     @IsNotEmpty()
