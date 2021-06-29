@@ -52,7 +52,9 @@ export class OrdersService {
                     store: { slots },
                 } = reservation
 
-                return slots?.find((slot) => slot.deliveryDate === deliveryDate)
+                return slots?.find((slot) => {
+                    return slot.deliveryDate
+                })
             },
         )
 
@@ -62,12 +64,15 @@ export class OrdersService {
             )
         }
 
+        const orderNumber = `${randomString(
+            ORDER_NUMBER_PREFIX_LENGTH,
+        )}-${randomString(ORDER_NUMBER_POSTFIX_LENGTH, true)}`
+
         const newOrder = this._ordersRepository.create({
             ...rest,
-            orderNumber: `${randomString(
-                ORDER_NUMBER_PREFIX_LENGTH,
-            )}-${randomString(ORDER_NUMBER_POSTFIX_LENGTH, true)}`,
+            orderNumber,
             positions: reservations,
+            deliveryDate,
         })
         const document = await this._ordersRepository.save(newOrder)
 

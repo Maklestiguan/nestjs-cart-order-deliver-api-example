@@ -19,6 +19,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
         this._logger.error({
             exception,
+            message: (exception as Record<string, string>)?.message,
             host: request.hostname,
             headers: request.headers,
         })

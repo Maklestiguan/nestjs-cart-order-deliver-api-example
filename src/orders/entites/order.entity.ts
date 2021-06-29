@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { AfterInsert, Column, Entity, JoinColumn, OneToMany } from 'typeorm'
+import { BeforeInsert, Column, Entity, JoinColumn, OneToMany } from 'typeorm'
 import { ReservationEntity } from '../../reservations/entites/reservation.entity'
 import { BaseEntity } from '../../shared/entities/base.entity'
 import { BigNumberFieldTransformer } from '../../shared/transformers/bignumber-field.transformer'
@@ -22,7 +22,7 @@ export class OrderEntity extends BaseEntity {
     deliveryAddress: string
 
     @Column()
-    deliveryDate: Date
+    deliveryDate: string
 
     @OneToMany(() => ReservationEntity, (reservation) => reservation.order, {
         eager: true,
@@ -31,7 +31,7 @@ export class OrderEntity extends BaseEntity {
     @JoinColumn()
     positions: ReservationEntity[]
 
-    @AfterInsert()
+    @BeforeInsert()
     calculatePrice(): void {
         this.price = this.positions.reduce(
             (acc, { product: { price }, quantity }) => {

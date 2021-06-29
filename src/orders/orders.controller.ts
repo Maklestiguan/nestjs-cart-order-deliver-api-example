@@ -49,7 +49,7 @@ export class OrdersController {
                     productId,
                     storeId,
                     quantity,
-                    deliveryDate: deliveryDate.toISOString(),
+                    deliveryDate,
                 }
             }),
         }

@@ -19,8 +19,8 @@ export class CreateOrderDto {
     clientId: number
 
     @IsDateString()
-    @Transform(({ value }) => new Date(value))
-    deliveryDate: Date
+    @Transform(({ value }) => new Date(value).toISOString())
+    deliveryDate: string
 
     @IsString()
     @IsNotEmpty()

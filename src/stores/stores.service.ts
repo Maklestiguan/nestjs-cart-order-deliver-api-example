@@ -147,7 +147,7 @@ export class StoresService implements OnModuleInit {
         }
     }
 
-    @OnEvent('order.created', { async: true })
+    @OnEvent('order.created')
     private async _handleOrderCreatedEvent(
         payload: OrderEntity,
     ): Promise<void> {
@@ -165,11 +165,15 @@ export class StoresService implements OnModuleInit {
             const updatedStoreSlots = storeSlots.map((slot) => {
                 return {
                     ...slot,
-                    available: slot.available--,
+                    available: slot.available - 1,
                 }
             })
 
             await this._storeSlotsRepository.save(updatedStoreSlots)
+
+            this._logger.log(
+                `${updatedStoreSlots.length} slot records updated on order creation`,
+            )
         } catch (error) {
             this._logger.error({
                 error,
